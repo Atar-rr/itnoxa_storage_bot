@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.0-fpm
 
 ARG USER_ID
 ARG GROUP_ID
@@ -15,12 +15,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/* \
     # Install xdebug
-    && pecl install xdebug-2.8.0 \
+    && pecl install xdebug \
     && docker-php-ext-enable xdebug \
     # Install PHP extensions
-    && docker-php-ext-install json \
-    && docker-php-ext-install pdo \
-    && docker-php-ext-install mbstring \
     && docker-php-ext-install pdo_mysql
 
 RUN wget https://getcomposer.org/installer -O - -q \
@@ -28,7 +25,7 @@ RUN wget https://getcomposer.org/installer -O - -q \
 
 RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data
 
-#ADD ./conf.d/php.ini /usr/local/etc/php/php.ini
+ADD ./conf.d/php.ini /usr/local/etc/php/php.ini
 
 WORKDIR /var/www
 
