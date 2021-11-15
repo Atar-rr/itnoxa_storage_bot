@@ -20,9 +20,9 @@ class ItemPropertyDto
     private ?string $size = null;
 
     /**
-     * @var ItemStorageDto[] Товар на складах
+     * @var BalanceDto[] Товар на складах
      */
-    private array $itemStorage;
+    private array $balances;
 
     /**
      * @return string
@@ -79,30 +79,30 @@ class ItemPropertyDto
     }
 
     /**
-     * @return ItemStorageDto[]
+     * @return BalanceDto[]
      */
-    public function getItemStorage(): array
+    public function getBalances(): array
     {
-        return $this->itemStorage;
+        return $this->balances;
     }
 
     /**
-     * @param ItemStorageDto[] $itemStorage
+     * @param BalanceDto[] $balances
      * @return ItemPropertyDto
      */
-    public function setItemStorage(array $itemStorage): ItemPropertyDto
+    public function setBalances(array $balances): ItemPropertyDto
     {
-        $this->itemStorage = $itemStorage;
+        $this->balances = $balances;
         return $this;
     }
 
     /**
-     * @param ItemStorageDto $itemStorage
+     * @param BalanceDto $itemStorage
      * @return ItemPropertyDto
      */
-    public function addItemStorage(ItemStorageDto $itemStorage): ItemPropertyDto
+    public function addItemStorage(BalanceDto $itemStorage): ItemPropertyDto
     {
-        $this->itemStorage[] = $itemStorage;
+        $this->balances[] = $itemStorage;
         return $this;
     }
 }

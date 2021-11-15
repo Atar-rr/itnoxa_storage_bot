@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItem extends Migration
+class CreateItems extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateItem extends Migration
      */
     public function up()
     {
-        Schema::create('item', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table
                 ->id()
                 ->comment('Идентификатор');
@@ -43,6 +43,6 @@ class CreateItem extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item');
+        Schema::dropIfExists('items');
     }
 }

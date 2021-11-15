@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Dto;
-
-class ItemStorageDto
+#TODO переименовать
+class BalanceDto
 {
     /**
      * @var int Идентификатор склада
@@ -24,9 +24,9 @@ class ItemStorageDto
 
     /**
      * @param int $storageId
-     * @return ItemStorageDto
+     * @return BalanceDto
      */
-    public function setStorageId(int $storageId): ItemStorageDto
+    public function setStorageId(int $storageId): BalanceDto
     {
         $this->storageId = $storageId;
         return $this;
@@ -42,9 +42,9 @@ class ItemStorageDto
 
     /**
      * @param int $quantity
-     * @return ItemStorageDto
+     * @return BalanceDto
      */
-    public function setQuantity(int $quantity): ItemStorageDto
+    public function setQuantity(int $quantity): BalanceDto
     {
         $this->quantity = $quantity;
         return $this;

@@ -48,7 +48,7 @@ class YandexDiskUploader implements FileUploader
     }
 
     #TODO передавать сюда не название файла, а весь массив, инкапсулировать логику работы в этом классе, чтобы не зависеть от структуры данных
-    public function upload(string $file)
+    public function upload(string $file): array
     {
         try {
             $file = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStorage extends Migration
+class CreateStorages extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateStorage extends Migration
      */
     public function up()
     {
-        Schema::create('storage', function (Blueprint $table) {
+        Schema::create('storages', function (Blueprint $table) {
             $table->id()
                 ->comment('Идентификатор');
             $table
@@ -32,6 +32,6 @@ class CreateStorage extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('storage');
+        Schema::dropIfExists('storages');
     }
 }

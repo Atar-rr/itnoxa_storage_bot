@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItemStorage extends Migration
+class CreateItemPropertyBalances extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,18 @@ class CreateItemStorage extends Migration
      */
     public function up()
     {
-        Schema::create('item_storage', function (Blueprint $table) {
+        Schema::create('item_property_balances', function (Blueprint $table) {
             $table->id()
                 ->comment('Идентификатор');
             $table
                 ->foreignId('item_property_id')
                 ->index()
                 ->nullable(false)
-                ->comment('Идентификатор характеристики товара')->constrained('item_property');
+                ->comment('Идентификатор характеристики товара')->constrained('item_properties');
             $table->foreignId('storage_id')
                 ->index()
                 ->nullable(false)
-                ->comment('Идентификатор склада')->constrained('storage');
+                ->comment('Идентификатор склада')->constrained('storages');
             $table
                 ->integer('quantity')
                 ->nullable(false)
@@ -42,6 +42,6 @@ class CreateItemStorage extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_storage');
+        Schema::dropIfExists('item_property_balances');
     }
 }

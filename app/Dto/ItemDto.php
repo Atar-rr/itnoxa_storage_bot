@@ -22,7 +22,7 @@ class ItemDto
     /**
      * @var ItemPropertyDto[] Свойства товара
      */
-    private array $itemProperty;
+    private array $itemProperty = [];
 
 //    public function __construct(array $data)
 //    {
@@ -105,11 +105,12 @@ class ItemDto
 
     /**
      * @param ItemPropertyDto $itemProperty
+     * @param string $key
      * @return ItemDto
      */
-    public function addItemProperty(ItemPropertyDto $itemProperty): itemDto
+    public function addItemProperty(ItemPropertyDto $itemProperty, string $key): itemDto
     {
-        $this->itemProperty[] = $itemProperty;
+        $this->itemProperty[$key] = $itemProperty;
         return $this;
     }
 }

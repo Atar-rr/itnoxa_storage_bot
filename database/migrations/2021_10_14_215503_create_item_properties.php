@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItemProperty extends Migration
+class CreateItemProperties extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateItemProperty extends Migration
      */
     public function up()
     {
-        Schema::create('item_property', function (Blueprint $table) {
+        Schema::create('item_properties', function (Blueprint $table) {
             $table->id()
                 ->comment('Идентификатор');
             $table
@@ -21,7 +21,7 @@ class CreateItemProperty extends Migration
                 ->index()
                 ->nullable(false)
                 ->comment('Идентификатор товара')
-                ->constrained('item');
+                ->constrained('items');
             $table
                 ->string('guid', 100)
                 ->nullable(false)
@@ -35,6 +35,7 @@ class CreateItemProperty extends Migration
             $table
                 ->string('size', 50)
                 ->nullable(false)
+                ->default('')
                 ->comment('Размер товара');
             $table->timestamps();
         });
@@ -47,6 +48,6 @@ class CreateItemProperty extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_property');
+        Schema::dropIfExists('item_properties');
     }
 }

@@ -18,13 +18,13 @@ class FileUploadFactory
     public function getFileUploader(string $type): FileUploader
     {
         if ($type === self::YANDEX_DISK) {
-            return new YandexDiskUploader();
+            return app(YandexDiskUploader::class);
         }
 
         if ($type === self::FILE_SYSTEM) {
-            return new FileSystemUploader();
+            return app(FileSystemUploader::class);
         }
 
-        throw new Exception('Class not exists in factory upload');
+        throw new Exception("Class {$type} not exists in factory upload");
     }
 }
