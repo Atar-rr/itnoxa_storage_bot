@@ -16,11 +16,11 @@ class CallbackCommandFactory
     public static function createCallbackQueryCommandHandler(string $type): BaseCallbackCommandHandler
     {
         if ($type === self::SELECT_STORAGE_COMMAND) {
-            return app(SelectStorageCallbackCommandHandler::class);
+            return app(SelectStorageCallbackCommandHandlerInterface::class);
         }
 
         if ($type === self::CLOSE_KEYBOARD) {
-            return app(CloseKeyboardCallbackCommandHandler::class);
+            return app(CloseKeyboardCallbackCommandHandlerInterface::class);
         }
 
         throw new CallbackCommandNotFound("Class {$type} not exists in factory upload");

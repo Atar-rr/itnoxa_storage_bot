@@ -23,8 +23,11 @@ backup: ## Сделать дамп базы mysql
 mysql-down: ## Останавливаем mysql на хосте, если запущена
 	sudo service mysql stop
 
-migrate: ## выполнить миграцию в контейнере
+migrate: ## выполнить миграции в контейнере
 	docker-compose exec php-fpm php artisan migrate
+
+ide-helper: ## генерация phpdoc моделях
+	docker-compose exec php-fpm php artisan ide-helper:model -W
 
 migrate-rollback: ## откатить последнею миграцию в контейнере
 	docker-compose exec php-fpm php artisan migrate:rollback

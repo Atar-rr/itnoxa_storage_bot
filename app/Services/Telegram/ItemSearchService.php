@@ -11,6 +11,7 @@ use App\Models\ItemPropertyBalance;
 use App\Models\UserSelectStorage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ItemSearchService
 {
@@ -22,12 +23,11 @@ class ItemSearchService
 
     /**
      * @param ItemSearchDto $itemSearchDto
-     * @return Item
+     * @return array
      * @throws DomainException
      */
-    public function findByArticle(ItemSearchDto $itemSearchDto): Item
+    public function findByArticle(ItemSearchDto $itemSearchDto): array
     {
-        #TODO если кто-то обошел команду start -_- ?
         #TODO попахивает дублем app/Services/Telegram/UserSettingStorageService.php:123
         $userStorages = BotUser::whereTelegramUserId($itemSearchDto->getUserId())
             ->first()
@@ -57,8 +57,8 @@ class ItemSearchService
         // Извлекаем если по нему есть остатки
         $item = Item::whereHas(Item::REL_PROPERTIES, function (Builder $query) use ($userStorageIds) {
             $query->whereHas(ItemProperty::REL_BALANCE, function (Builder $query) use ($userStorageIds) {
-                $query->whereIn(ItemPropertyBalance::COL_STORAGE_ID, $userStorageIds);
-            }, '>', 0);
+                $query->whereIn(ItemPropertyBalance::COL_STORAGE_ID, $userStorageIds)->where(ItemPropertyBalance::COL_QUANTITY, '>', 0);
+            });
         })
             ->where(Item::COL_ARTICLE, $itemSearchDto->getPhrase())
             ->with(Item::REL_PROPERTIES . '.' . ItemProperty::REL_BALANCE)
@@ -69,7 +69,7 @@ class ItemSearchService
             throw new DomainException(self::ERROR_NO_BALANCE);
         }
 
-       return $item;
+       return [$item, $userStorageIds];
     }
 
     /**

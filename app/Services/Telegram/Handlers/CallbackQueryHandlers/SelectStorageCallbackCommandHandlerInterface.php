@@ -2,20 +2,27 @@
 
 namespace App\Services\Telegram\Handlers\CallbackQueryHandlers;
 
+use App\Services\BotUser\BotUserCreateService;
 use App\Services\Telegram\UserSettingStorageService;
 use App\Services\Telegram\TelegramDictionary;
 use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 
-class SelectStorageCallbackCommandHandler implements BaseCallbackCommandHandler
+class SelectStorageCallbackCommandHandlerInterface extends BaseCallbackCommandHandler
 {
     /**
      * @param UserSettingStorageService $userSettingStorageService
+     * @param BotUserCreateService $botUserCreateService
      */
     public function __construct(
-        protected UserSettingStorageService $userSettingStorageService
-    ) {}
+        /** @var UserSettingStorageService */
+        protected UserSettingStorageService $userSettingStorageService,
+        /** @var BotUserCreateService */
+        protected BotUserCreateService $botUserCreateService,
+    ) {
+        parent::__construct($botUserCreateService, $userSettingStorageService);
+    }
 
     /**
      * @param Command $command
@@ -28,6 +35,7 @@ class SelectStorageCallbackCommandHandler implements BaseCallbackCommandHandler
         $message = $callbackQuery->getMessage();
         $userId = $message->getChat()->getId();
 
+        $this->registrationUserIfNotExist($userId, $message->getChat()->getUsername());
         $this->userSettingStorageService->update($params, $userId);
         $inlineKeyboard = $this->userSettingStorageService->getUserStorageSettingKeyboard($userId);
 

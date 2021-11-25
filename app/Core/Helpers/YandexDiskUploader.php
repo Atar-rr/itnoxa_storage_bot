@@ -15,7 +15,12 @@ class YandexDiskUploader implements FileUploader
 
     public const
         RESPONSE_FIELD_EMBEDDED = '_embedded',
-        RESPONSE_FIELD_ITEMS = 'items';
+        RESPONSE_FIELD_ITEMS = 'items',
+        RESPONSE_FIELD_FILE = 'file',
+        RESPONSE_FIELD_PATH = 'path';
+
+    /** @var string[] */
+    public array $filePath = [];
 
     /**
      * @var string
@@ -27,8 +32,12 @@ class YandexDiskUploader implements FileUploader
         $this->token = (string)env(self::TOKEN_YANDEX_DISK);
     }
 
+    /**
+     * @return array
+     */
     public function getListFileForUpload(): array
     {
+        $return = [];
         $files = [];
 
         $response = Http::withHeaders([
@@ -44,10 +53,18 @@ class YandexDiskUploader implements FileUploader
             #TODO лог
         }
 
-        return $files[self::RESPONSE_FIELD_EMBEDDED][self::RESPONSE_FIELD_ITEMS];
+        foreach ($files[self::RESPONSE_FIELD_EMBEDDED][self::RESPONSE_FIELD_ITEMS] as $file) {
+            $return[] = $file[self::RESPONSE_FIELD_FILE];
+            $this->filePath[$file[self::RESPONSE_FIELD_FILE]] = $file[self::RESPONSE_FIELD_PATH];
+        }
+
+        return $return;
     }
 
-    #TODO передавать сюда не название файла, а весь массив, инкапсулировать логику работы в этом классе, чтобы не зависеть от структуры данных
+    /**
+     * @param string $file
+     * @return array
+     */
     public function upload(string $file): array
     {
         try {
@@ -55,30 +72,37 @@ class YandexDiskUploader implements FileUploader
         } catch (JsonException $e) {
             #TODO лог
         }
-        //обходим и собираем DTO
 
         return $file;
     }
 
+    /**
+     * @param string $file
+     */
     public function delete(string $file): void
     {
-        #TODO что если не успех?
-        Http::withHeaders([
+        #TODO что если не вышло?
+        $pendingRequest = Http::withHeaders([
             RequestHeaders::ACCEPT => 'application/json',
             RequestHeaders::AUTHORIZATION => $this->token,
-        ])->delete(self::YANDEX_RESOURCE_URL, [
-            #TODO заменить на путь до файла
-            self::REQUEST_FIELD_PATH => 'disk:/ВыгрузкаБот',
-        ]);
+        ])->bodyFormat('query');
+
+        $result = $pendingRequest->delete(
+            self::YANDEX_RESOURCE_URL,
+            [
+                self::REQUEST_FIELD_PATH => $this->filePath[$file],
+            ]
+        );
+
+        // попробуем еще раз
+        if (!$result->successful()) {
+            $pendingRequest->delete(
+                self::YANDEX_RESOURCE_URL,
+                [
+                    self::REQUEST_FIELD_PATH => $this->filePath[$file],
+                ]
+            );
+            #TODO лог
+        }
     }
 }
-
-/**
- * 1. Получаем список файлов для загрузки типа есть
- * 2. Обходим список файлов
- * 3. Загружаем файл
- * 4. Создаем DTO с содержимым файла
- * 5. Загружаем в БД (транзакция? если не удалось, пишем лог, пробуем еще раз)
- * 6. Удаляем загруженный файл
- * 6. Переходим к след. элементу
- */

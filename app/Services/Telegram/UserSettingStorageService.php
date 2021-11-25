@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services\BotUser;
+namespace App\Services\Telegram;
 
 use App\Models\BotUser;
 use App\Models\Storage;
 use App\Models\UserSelectStorage;
 use App\Services\Telegram\Handlers\CallbackQueryHandlers\CallbackCommandFactory;
-use App\Services\Telegram\TelegramDictionary;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Longman\TelegramBot\Entities\InlineKeyboard;
@@ -64,11 +63,28 @@ class UserSettingStorageService
     }
 
     /**
+     * @param BotUser $botUser
+     */
+    public function setDefaultSettingForNewUser(BotUser $botUser): void
+    {
+        $storages = Storage::all(Storage::COL_ID);
+        $storageIds = [];
+
+        foreach ($storages as $storage) {
+            $storageIds[] = [UserSelectStorage::COL_STORAGE_ID => $storage->id];
+        }
+
+        $botUser->storages()->createMany(
+            $storageIds
+        );
+    }
+
+    /**
      * Получение клавиатуры с текущими настройками складов для пользователя
      *
      * @param int $userId
      * @return InlineKeyboard
-     */#TODO рефакторинг DTO на входе
+     */#TODO рефакторинг DTO на входе и название, а так же ответ
     public function getUserStorageSettingKeyboard(int $userId): InlineKeyboard
     {
         $userStorageIds = array_flip($this->getUserStorageIds($userId));

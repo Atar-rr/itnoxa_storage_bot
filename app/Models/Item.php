@@ -28,6 +28,10 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @method static Builder|Item whereUpdatedAt($value)
  * @mixin \Eloquent
  * @mixin Builder
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ItemProperty[] $properties
+ * @property-read int|null $properties_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ItemPropertyBalance[] $propertyBalances
+ * @property-read int|null $property_balances_count
  */
 class Item extends Model
 {

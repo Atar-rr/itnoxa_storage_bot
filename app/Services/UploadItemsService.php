@@ -9,6 +9,7 @@ use App\Models\ItemPropertyBalance;
 use Illuminate\Database\Eloquent\Collection;
 
 #TODO рефакторинг создания и обновления записей
+#Может происходить падение по памяти из-за слишком большого кол-ва загруженных моделей и объектов DTO при загрузке полной выгрузки
 class UploadItemsService
 {
     /**
@@ -21,12 +22,12 @@ class UploadItemsService
         #TODO вынести в модель ?
         $items = Item::whereIn(Item::COL_GUID, $guids)->with('properties.balance')->get();
 
-        $itemCreateGuids = array_diff($guids, array_column($items->toArray(), Item::COL_GUID));
+        $itemCreatedGuids = array_diff($guids, array_column($items->toArray(), Item::COL_GUID));
 
         // создаем если есть новые товары
-        if (count($itemCreateGuids) > 0) {
+        if (count($itemCreatedGuids) > 0) {
             $this->createItems(
-                $itemCreateGuids,
+                $itemCreatedGuids,
                 $itemDto
             );
         }
@@ -119,6 +120,7 @@ class UploadItemsService
             foreach ($itemDto[$item->guid]->getItemProperty() as $itemPropertyDto) {
 
                 //обновляем свойства товаров или создаем новые
+                /** @var ItemProperty $itemProperty */
                 $itemProperty = $item->properties()->updateOrCreate(
                     [
                         ItemProperty::COL_GUID => $itemPropertyDto->getGuid(),
@@ -131,11 +133,12 @@ class UploadItemsService
 
                 foreach ($itemPropertyDto->getBalances() as $balanceDto) {
                     //обновляем остаток на складе или создаем новый
-                    $itemProperty->first()->balance()->updateOrCreate(
+                    $itemProperty->balance()->updateOrCreate(
                         [
                             ItemPropertyBalance::COL_STORAGE_ID => $balanceDto->getStorageId(),
                         ],
                         [
+                            ItemPropertyBalance::COL_STORAGE_ID => $balanceDto->getStorageId(),
                             ItemPropertyBalance::COL_QUANTITY => $balanceDto->getQuantity(),
                         ]
                     );

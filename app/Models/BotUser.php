@@ -7,12 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * App\Models\BotUser
+ *
  * @property $id
  * @property $telegram_user_id
  * @property $user_name
  * @property $created_at
  * @property $updated_at
- * @method whereTelegramUserId(int $userId)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserSelectStorage[] $storages
+ * @property-read int|null $storages_count
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser query()
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser whereTelegramUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BotUser whereUserName($value)
+ * @mixin \Eloquent
  */
 class BotUser extends Model
 {

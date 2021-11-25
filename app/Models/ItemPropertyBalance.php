@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|ItemPropertyBalance whereStorageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ItemPropertyBalance whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\ItemProperty $itemProperty
+ * @property-read \App\Models\Storage $storage
  */
 class ItemPropertyBalance extends Model
 {
@@ -43,6 +45,7 @@ class ItemPropertyBalance extends Model
 
     protected $fillable = [
         'quantity',
+        'storage_id',
     ];
 
     /**

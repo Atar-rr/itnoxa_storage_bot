@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services\BotUser;
+namespace App\Services\Telegram;
 
 use App\Dto\EditKeyboardDto;
 use App\Services\Telegram\Handlers\CallbackQueryHandlers\CallbackCommandFactory;
-use App\Services\Telegram\TelegramDictionary;
 use Longman\TelegramBot\Request;
 
 class EditKeyboardService

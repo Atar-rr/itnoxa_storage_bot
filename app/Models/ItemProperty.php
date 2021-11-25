@@ -30,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|ItemProperty whereUpdatedAt($value)
  * @mixin \Eloquent
  * @mixin Builder
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ItemPropertyBalance[] $balance
+ * @property-read int|null $balance_count
+ * @property-read \App\Models\Item $item
  */
 class ItemProperty extends Model
 {

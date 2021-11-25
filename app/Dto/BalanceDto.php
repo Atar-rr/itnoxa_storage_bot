@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Dto;
-#TODO переименовать
+#TODO подумать над именованием
 class BalanceDto
 {
     /**
