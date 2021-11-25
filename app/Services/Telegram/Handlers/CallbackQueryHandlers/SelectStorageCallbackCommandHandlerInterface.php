@@ -2,7 +2,7 @@
 
 namespace App\Services\Telegram\Handlers\CallbackQueryHandlers;
 
-use App\Services\BotUser\UserSettingStorageService;
+use App\Services\Telegram\UserSettingStorageService;
 use App\Services\Telegram\TelegramDictionary;
 use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Entities\ServerResponse;

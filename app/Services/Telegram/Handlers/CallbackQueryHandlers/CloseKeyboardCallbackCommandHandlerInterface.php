@@ -3,7 +3,7 @@
 namespace App\Services\Telegram\Handlers\CallbackQueryHandlers;
 
 use App\Dto\EditKeyboardDto;
-use App\Services\BotUser\EditKeyboardService;
+use App\Services\Telegram\EditKeyboardService;
 use App\Services\Telegram\TelegramDictionary;
 use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Entities\CallbackQuery;
