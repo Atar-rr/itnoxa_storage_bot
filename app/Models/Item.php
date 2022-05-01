@@ -37,6 +37,8 @@ class Item extends Model
 {
     use HasFactory;
 
+    public const TABLE = 'items';
+
     public const
         REL_PROPERTIES = 'properties',
         REL_PROPERTY_BALANCES = 'propertyBalances';

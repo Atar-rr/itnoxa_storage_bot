@@ -33,6 +33,8 @@ class ItemPropertyBalance extends Model
 {
     use HasFactory;
 
+    public const TABLE = 'item_property_balances';
+
     public const
         REL_ITEM_PROPERTY = 'itemProperty',
         REL_STORAGE = 'storage';

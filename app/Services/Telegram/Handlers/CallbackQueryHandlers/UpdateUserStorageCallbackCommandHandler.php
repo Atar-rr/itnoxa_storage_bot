@@ -9,7 +9,7 @@ use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 
-class SelectStorageCallbackCommandHandlerInterface extends BaseCallbackCommandHandler
+class UpdateUserStorageCallbackCommandHandler extends BaseCallbackCommandHandler
 {
     /**
      * @param UserSettingStorageService $userSettingStorageService
@@ -25,9 +25,12 @@ class SelectStorageCallbackCommandHandlerInterface extends BaseCallbackCommandHa
     }
 
     /**
-     * @param Command $command
-     * @param array $params
+     * @param  Command  $command
+     * @param  array    $params
+     *
      * @return ServerResponse
+     * @throws \App\Exceptions\BotUserExistException
+     * @throws \JsonException|\Throwable
      */
     public function handler(Command $command, array $params): ServerResponse
     {
@@ -36,7 +39,11 @@ class SelectStorageCallbackCommandHandlerInterface extends BaseCallbackCommandHa
         $userId = $message->getChat()->getId();
 
         $this->registrationUserIfNotExist($userId, $message->getChat()->getUsername());
+
+        // обновляем настройки
         $this->userSettingStorageService->update($params, $userId);
+
+        // получаем новые настройки складов
         $inlineKeyboard = $this->userSettingStorageService->getUserStorageSettingKeyboard($userId);
 
         // обновляем клавиатуру пользователя
@@ -46,9 +53,9 @@ class SelectStorageCallbackCommandHandlerInterface extends BaseCallbackCommandHa
             TelegramDictionary::REPLY_MARKUP => $inlineKeyboard,
         ]);
 
-        #TODO добавить название склада
+        #TODO добавить название склада, а не только добавлен/удален
         #TODO сейчас в лоб, но по факту может случиться ошибка, нужно это учитывать
-        $text = $params['action'] === 'set' ? 'добавлен' : 'удален';
+        $text = $params['action'] === UserSettingStorageService::ACTION_SET ? 'добавлен' : 'удален';
 
         return $callbackQuery->answer([
             TelegramDictionary::TEXT => 'Склад ' . $text,

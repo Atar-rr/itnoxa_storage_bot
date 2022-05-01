@@ -11,14 +11,14 @@ class CallbackqueryCommand extends UserCommand
 {
     /**
      * @inheritDoc
+     * @throws \App\Exceptions\CallbackCommandNotFound|\JsonException
      */
     public function execute(): ServerResponse
     {
         $callbackData = $this->getCallbackQuery()->getData();
 
-        $params = json_decode($callbackData, true);
+        $params = json_decode($callbackData, true, 512, JSON_THROW_ON_ERROR);
 
-        #TODO что делать, если type не найден в фабрике
         return CallbackCommandFactory::createCallbackQueryCommandHandler(
             $params['type'] // Определяем кому делегировать работу
         )->handler($this, $params);

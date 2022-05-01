@@ -3,12 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Core\Helpers\FileUploadFactory;
-use App\Dto\ItemDto;
-use App\Dto\ItemPropertyDto;
-use App\Dto\BalanceDto;
+use App\Dto\Request\BalanceDto;
+use App\Dto\Request\ItemDto;
+use App\Dto\Request\ItemPropertyDto;
 use App\Models\Storage;
 use App\Services\UploadItemsService;
+use Dompdf\Dompdf;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Загрузка товарных остатков
@@ -74,7 +76,7 @@ class UploadItems extends Command
         parent::__construct();
 
         //Проблема при обработке больших файлов из-за лимита памяти на хостинге
-        ini_set('memory_limit', '300M');
+        ini_set('memory_limit', '500M');
     }
 
     /**
@@ -95,11 +97,11 @@ class UploadItems extends Command
         foreach ($listFiles as $file) {
             $data = $fileUploader->upload($file);
             if (!isset($data[self::FIELD_BALANCE_IN_STORAGE])) {
-                #TODO log, не валидный файл приехал
+                Log::error('Отсутствуют обязательно поле ' . self::FIELD_BALANCE_IN_STORAGE);
                 continue;
             }
 
-            $items = $this->createItems($data[self::FIELD_BALANCE_IN_STORAGE]);
+            $items = $this->getAggregatedItems($data[self::FIELD_BALANCE_IN_STORAGE]);
 
             //освобождаем память от загруженного ранее файла
             unset($data);
@@ -118,16 +120,19 @@ class UploadItems extends Command
      * @param array $data
      * @return ItemDto[]
      */
-    private function createItems(array $data): array
+    private function getAggregatedItems(array $data): array
     {
         /** @var ItemDto[] $items */
         $items = [];
 
         foreach ($data as $value) {
-            if ($value[self::FIELD_RUS_PROPERTY_GUID] === ''
-                || !isset(self::MAP_STORAGES[$value[self::FIELD_RUS_STORAGE]])
-            ) {
-                #TODO лог
+            if ($value[self::FIELD_RUS_PROPERTY_GUID] === '' || $value[self::FIELD_RUS_PROPERTY_GUID] === '00000000-0000-0000-0000-000000000000') {
+                Log::error(implode( ' ', $value) . ' Отсутствуют обязательно поле ' . self::FIELD_RUS_PROPERTY_GUID);
+                continue;
+            }
+
+            if (!isset(self::MAP_STORAGES[$value[self::FIELD_RUS_STORAGE]])) {
+                Log::error('Склад который не доступен для работы ' . $value[self::FIELD_RUS_STORAGE]);
                 continue;
             }
 
@@ -152,7 +157,6 @@ class UploadItems extends Command
                             ->addItemStorage(
                                 (new BalanceDto())
                                     ->setQuantity($value[self::FIELD_RUS_QUANTITY])
-                                    #TODO добавить проверку наличия склада в MAP_STORAGES
                                     ->setStorageId(self::MAP_STORAGES[$value[self::FIELD_RUS_STORAGE]])
                             )
                             ->setSize($value[self::FIELD_RUS_SIZE_SHOP]),

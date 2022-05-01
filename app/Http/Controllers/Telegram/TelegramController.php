@@ -20,9 +20,9 @@ class TelegramController extends Controller
         $telegram->addCommandsPath(base_path('app/Services/Telegram/Commands'));
 
         #TODO убрать куда-то для локального тестирования, запуск через getUpdates
-        $telegram->useGetUpdatesWithoutDatabase();
-        $telegram->handleGetUpdates();
+//        $telegram->useGetUpdatesWithoutDatabase();
+//        $telegram->handleGetUpdates();
 
-//        $telegram->handle();
+        $telegram->handle();
     }
 }

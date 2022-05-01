@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Dto\BotUserDto;
+use App\Dto\Request\BotUserDto;
 use App\Exceptions\BotUserExistException;
 use App\Models\BotUser;
 use Illuminate\Support\Facades\DB;
@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\DB;
 trait BotUserRegistrationHelper
 {
     /**
-     * @param int $userId
-     * @param string $userName
+     * @param  int     $userId
+     * @param  string  $userName
+     *
+     * @throws BotUserExistException
      */
     protected function registrationUserIfNotExist(int $userId, string $userName): void
     {
@@ -23,9 +25,9 @@ trait BotUserRegistrationHelper
                     new BotUserDto($userId, $userName)
                 );
                 $this->userSettingStorageService->setDefaultSettingForNewUser($botUser);
-            } catch (BotUserExistException) {
+            } catch (BotUserExistException $e) {
                 DB::rollBack();
-                #TODO лог
+                throw $e;
             }
             DB::commit();
         }

@@ -2,7 +2,7 @@
 
 namespace App\Services\Telegram\Handlers\CallbackQueryHandlers;
 
-use App\Dto\EditKeyboardDto;
+use App\Dto\Request\EditKeyboardDto;
 use App\Services\BotUser\BotUserCreateService;
 use App\Services\Telegram\EditKeyboardService;
 use App\Services\Telegram\TelegramDictionary;
@@ -11,7 +11,7 @@ use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Entities\CallbackQuery;
 use Longman\TelegramBot\Entities\ServerResponse;
 
-class CloseKeyboardCallbackCommandHandlerInterface extends BaseCallbackCommandHandler
+class CloseKeyboardCallbackCommandHandler extends BaseCallbackCommandHandler
 {
     protected const DEFAULT_MESSAGE = 'Настройки успешно сохранены';
 
@@ -26,9 +26,15 @@ class CloseKeyboardCallbackCommandHandlerInterface extends BaseCallbackCommandHa
         parent::__construct($botUserCreateService, $userSettingStorageService);
     }
 
+    /**
+     * @param  Command  $command
+     * @param  array    $params
+     *
+     * @return ServerResponse
+     * @throws \App\Exceptions\BotUserExistException
+     */
     public function handler(Command $command, array $params): ServerResponse
     {
-
         $callbackQuery = $command->getCallbackQuery();
         $chat = $callbackQuery->getMessage()->getChat();
 

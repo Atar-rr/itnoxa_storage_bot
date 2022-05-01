@@ -2,12 +2,15 @@
 
 namespace App\Services\Telegram;
 
+use App\Exceptions\DomainException;
 use App\Models\BotUser;
 use App\Models\Storage;
 use App\Models\UserSelectStorage;
 use App\Services\Telegram\Handlers\CallbackQueryHandlers\CallbackCommandFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 
 /**
@@ -24,6 +27,11 @@ class UserSettingStorageService
         ACTION_DROP = 'drop',
         ACTION_SET = 'set';
 
+    public const EXIST_ACTIONS = [
+        self::ACTION_DROP,
+        self::ACTION_SET
+    ];
+
     /**
      * @param UserSelectStorage $userSelectStorage
      * @param Storage $storage
@@ -36,8 +44,11 @@ class UserSettingStorageService
     ) {}
 
     /**
-     * @param array $params
-     * @param int $userId
+     * @param  array  $params
+     * @param  int    $userId
+     *
+     * @throws DomainException
+     * @throws \Throwable
      */#TODO рефакторинг DTO на входе
     public function update(array $params, int $userId): void
     {
@@ -45,21 +56,20 @@ class UserSettingStorageService
         $storageId = (int)$params[self::STORAGE_ID];
         $action = $params['action'];
 
+        if (!in_array($action, self::EXIST_ACTIONS, true)) {
+            throw new DomainException("Действие {$action} не доступно");
+        }
+
         try {
             Db::transaction(function () use ($storageId, $action, $userId) {
-                if ($action === self::ACTION_DROP) {
-                    $this->dropStorage($userId, $storageId);
-                }
-                if ($action === self::ACTION_SET) {
-                    $this->setStorage($userId, $storageId);
-                }
+                $action === self::ACTION_SET ? $this->setUserStorage($userId, $storageId) : $this->dropUserStorage($userId, $storageId);
             },
                 2
             );
-        } catch (\Throwable $exception) {
-            #TODO лог
+        } catch (\Throwable $e) {
+            Log::critical("Не удалось выполнить действие {$action} с настройкой складов у пользователя id={$userId}");
+            throw $e;
         }
-
     }
 
     /**
@@ -82,8 +92,10 @@ class UserSettingStorageService
     /**
      * Получение клавиатуры с текущими настройками складов для пользователя
      *
-     * @param int $userId
+     * @param  int  $userId
+     *
      * @return InlineKeyboard
+     * @throws \JsonException
      */#TODO рефакторинг DTO на входе и название, а так же ответ
     public function getUserStorageSettingKeyboard(int $userId): InlineKeyboard
     {
@@ -99,14 +111,11 @@ class UserSettingStorageService
 
             $inlineKeyboard->addRow([
                     TelegramDictionary::TEXT => ($userHasStorage ? $smileSelect : $smileCheckBox) . ' ' . $storage->name,
-                    TelegramDictionary::CALLBACK_DATA => json_encode(
-                        [
-                            self::STORAGE_ID => $storage->id,
-                            'action' => $userHasStorage ? self::ACTION_DROP : self::ACTION_SET,
-                            'type' => CallbackCommandFactory::SELECT_STORAGE_COMMAND
-                        ],
-                        JSON_UNESCAPED_UNICODE
-                    ),
+                    TelegramDictionary::CALLBACK_DATA => json_encode([
+                        self::STORAGE_ID => $storage->id,
+                        'action'         => $userHasStorage ? self::ACTION_DROP : self::ACTION_SET,
+                        'type'           => CallbackCommandFactory::SELECT_STORAGE_COMMAND
+                    ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
                 ]
             );
         }
@@ -120,9 +129,12 @@ class UserSettingStorageService
      * @param int $userId
      * @param int $storageId
      */
-    private function setStorage(int $userId, int $storageId): void
+    private function setUserStorage(int $userId, int $storageId): void
     {
         $user = BotUser::whereTelegramUserId($userId)->first(BotUser::COL_ID);
+        if ($user === null) {
+            throw new \DomainException('Пользователя с id=' . $userId . ' не существует');
+        }
 
         $this->userSelectStorage->storage_id = $storageId;
 
@@ -133,16 +145,21 @@ class UserSettingStorageService
      * @param int $userId
      * @param int $storageId
      */
-    private function dropStorage(int $userId, int $storageId): void
+    private function dropUserStorage(int $userId, int $storageId): void
     {
-        /** @var Collection  $userStorages */
+        /** @var Collection|null $userStorages */
         $userStorages = BotUser::whereTelegramUserId($userId)
-            ->first(BotUser::COL_ID)
-            ->storages()
-            ->get();
+                               ->first(BotUser::COL_ID)
+                               ?->storages()
+                               ->get();
+
+        if ($userStorages === null) {
+            throw new \DomainException('Пользователя с id=' . $userId . ' не существует');
+        }
 
         /** @var UserSelectStorage $userStorage */
         foreach ($userStorages as $userStorage) {
+            #fixme не делать выборку, а сразу удалять
             if ($userStorage->storage_id === $storageId) {
                 $userStorage->delete();
 
@@ -159,10 +176,15 @@ class UserSettingStorageService
     {
         $userStorageIds = [];
 
+        #TODO дубль app/Services/Telegram/UserSettingStorageService.php:136
         $userStorages = BotUser::whereTelegramUserId($userId)
             ->first(BotUser::COL_ID)
-            ->storages()
+            ?->storages()
             ->get(UserSelectStorage::COL_STORAGE_ID);
+
+        if ($userStorages === null) {
+            throw new \DomainException('Пользователя с id=' . $userId . ' не существует');
+        }
 
         foreach ($userStorages as $userStorage) {
             $userStorageIds[] = $userStorage->storage_id;

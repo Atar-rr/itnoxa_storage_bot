@@ -3,6 +3,7 @@
 namespace App\Core\Helpers;
 
 use Exception;
+use InvalidArgumentException;
 
 class FileUploadFactory
 {
@@ -25,6 +26,6 @@ class FileUploadFactory
             return app(FileSystemUploader::class);
         }
 
-        throw new Exception("Class {$type} not exists in factory upload");
+        throw new InvalidArgumentException("Class {$type} not exists in factory upload");
     }
 }

@@ -14,9 +14,9 @@ abstract class BaseCommandHandler
 
     public function __construct(
         /** @var BotUserCreateService */
-        protected BotUserCreateService $botUserCreateService,
+        protected BotUserCreateService $botUserCreateService, #TODO нафига это тут? Зависимость во всех классах -_-
         /** @var UserSettingStorageService */
-        protected UserSettingStorageService $userSettingStorageService,
+        protected UserSettingStorageService $userSettingStorageService, #TODO нафига это тут? Зависимость во всех классах -_-
     ) {}
 
     abstract public function handler(Command $systemCommand): ServerResponse;

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
         curl \
         wget \
         zip \
+        libzip-dev \
         unzip \
         libonig-dev \
         libfreetype6-dev \
@@ -17,8 +18,13 @@ RUN apt-get update && apt-get install -y \
     # Install xdebug
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
+    # Install sodium
+    && docker-php-ext-enable sodium \
     # Install PHP extensions
-    && docker-php-ext-install pdo_mysql
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-enable pdo_mysql \
+    && docker-php-ext-install gd \
+    && docker-php-ext-install zip
 
 RUN wget https://getcomposer.org/installer -O - -q \
         | php -- --install-dir=/bin --filename=composer --quiet

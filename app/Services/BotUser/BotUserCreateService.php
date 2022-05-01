@@ -2,7 +2,7 @@
 
 namespace App\Services\BotUser;
 
-use App\Dto\BotUserDto;
+use App\Dto\Request\BotUserDto;
 use App\Exceptions\BotUserExistException;
 use App\Models\BotUser;
 

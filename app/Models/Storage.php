@@ -25,6 +25,8 @@ class Storage extends Model
 {
     use HasFactory;
 
+    public const TABLE = 'storages';
+
     public const
         COL_ID = 'id',
         COL_NAME = 'name';

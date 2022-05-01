@@ -2,7 +2,7 @@
 
 namespace App\Services\Telegram\Handlers;
 
-use App\Dto\ItemSearchDto;
+use App\Dto\Request\ItemSearchDto;
 use App\Exceptions\DomainException;
 use App\Models\ItemProperty;
 use App\Models\ItemPropertyBalance;
@@ -16,9 +16,9 @@ use Longman\TelegramBot\Entities\ServerResponse;
 class ItemSearchHandler extends BaseCommandHandler
 {
     /**
-     * @param ItemSearchService $balanceService
-     * @param BotUserCreateService $botUserCreateService
-     * @param UserSettingStorageService $userSettingStorageService
+     * @param  ItemSearchService          $balanceService
+     * @param  BotUserCreateService       $botUserCreateService
+     * @param  UserSettingStorageService  $userSettingStorageService
      */
     public function __construct(
         /** @var ItemSearchService */
@@ -33,12 +33,12 @@ class ItemSearchHandler extends BaseCommandHandler
 
     /**
      * @throws \Longman\TelegramBot\Exception\TelegramException
+     * @throws \App\Exceptions\BotUserExistException
      */
     public function handler(Command $systemCommand): ServerResponse
     {
         $message = $systemCommand->getMessage();
-        $text = '';
-
+        $text    = '';
 
         if ($message->getText() === null) {
             return $systemCommand->replyToUser('Возможно вы удалили свое сообщение. Повторите запрос.');
@@ -52,7 +52,6 @@ class ItemSearchHandler extends BaseCommandHandler
         $this->registrationUserIfNotExist($message->getChat()->getId(), $message->getChat()->getUsername());
 
         try {
-            #TODO полный бред
             [$item, $userStorageIds] = $this->balanceService->findByArticle($itemSearchDto);
 
             $userStorageIds = array_flip($userStorageIds);
@@ -68,7 +67,7 @@ class ItemSearchHandler extends BaseCommandHandler
                         continue;
                     }
 
-                    if(!isset($itemBalanceInStorages[$storage->name])) {
+                    if (!isset($itemBalanceInStorages[$storage->name])) {
                         $itemBalanceInStorages[$storage->name][] =
                             hex2bin('F09F8E81')
                             . ' ' . $storage->name
@@ -80,7 +79,6 @@ class ItemSearchHandler extends BaseCommandHandler
             foreach ($itemBalanceInStorages as $itemBalanceInStorage) {
                 $text .= implode('', $itemBalanceInStorage) . "\n";
             }
-
         } catch (DomainException $e) {
             #TODO рефакторинг, получилось очень сложно
 
@@ -99,7 +97,6 @@ class ItemSearchHandler extends BaseCommandHandler
             }
         }
 
-       return $systemCommand->replyToUser($text);
+        return $systemCommand->replyToUser($text);
     }
-
 }

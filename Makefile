@@ -1,15 +1,19 @@
 init: down build up composer
 
 build: docker-build
-up: docker-up
-down: docker-down
 restart: down up
 
-docker-up: ## Запуск контейнеров в режиме демонов
+up: ## Запуск контейнеров в режиме демонов
 	docker-compose up -d
 
-docker-down: ## Остановка контейнеров с удалением временных файлов
+down: ## Остановка контейнеров с удалением временных файлов
 	docker-compose down --remove-orphans
+
+start: ## Запуск контейнеров в режиме демонов
+	docker-compose start
+
+stop: ## Остановка контейнеров
+	docker-compose stop
 
 docker-build: ## Сборка образов
 	docker-compose build
@@ -31,9 +35,6 @@ ide-helper: ## генерация phpdoc моделях
 
 migrate-rollback: ## откатить последнею миграцию в контейнере
 	docker-compose exec php-fpm php artisan migrate:rollback
-
-db-seed: ## Наполнить бд тестовыми данными
-	docker-compose exec php-fpm php artisan db:seed --class=ProductTypeSeeder
 
 env: ## копируем env.example
 	cp .env.example .env

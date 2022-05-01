@@ -1,18 +1,21 @@
 {
-    "name": "laravel/laravel",
+    "name": "chat_bot/itnoxa",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Chat bot",
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "ext-curl": "*",
         "ext-json": "*",
+        "dompdf/dompdf": "^1.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.3",
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "longman/telegram-bot": "^0.74.0"
+        "longman/telegram-bot": "^0.74.0",
+        "maatwebsite/excel": "^3.1",
+        "phpoffice/phpspreadsheet": "^1.22"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
@@ -28,7 +31,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Core/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

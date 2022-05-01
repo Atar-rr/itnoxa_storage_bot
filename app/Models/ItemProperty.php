@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * App\Models\ItemProperty
  *
- * @property int $id Идентификатор
- * @property int $item_id Идентификатор товара
- * @property string $guid Уникальный guid характеристика товара в 1С
- * @property string $name Название товара
- * @property string $size Размер товара
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int                                                                             $id      Идентификатор
+ * @property int                                                                             $item_id Идентификатор товара
+ * @property string                                                                          $guid    Уникальный guid характеристика товара в 1С
+ * @property string                                                                          $name    Название товара
+ * @property string                                                                          $size    Размер товара
+ * @property \Illuminate\Support\Carbon|null                                                 $created_at
+ * @property \Illuminate\Support\Carbon|null                                                 $updated_at
  * @method static Builder|ItemProperty newModelQuery()
  * @method static Builder|ItemProperty newQuery()
  * @method static Builder|ItemProperty query()
@@ -31,12 +31,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @mixin \Eloquent
  * @mixin Builder
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ItemPropertyBalance[] $balance
- * @property-read int|null $balance_count
- * @property-read \App\Models\Item $item
+ * @property-read int|null                                                                   $balance_count
+ * @property-read \App\Models\Item                                                           $item
  */
 class ItemProperty extends Model
 {
     use HasFactory;
+
+    public const TABLE = 'item_properties';
 
     public const
         REL_ITEM = 'item',
@@ -47,7 +49,8 @@ class ItemProperty extends Model
         COL_ITEM_ID = 'item_id',
         COL_GUID = 'guid',
         COL_NAME = 'name',
-        COL_SIZE = 'size';
+        COL_SIZE = 'size',
+        COL_COLOR = 'color';
 
     protected $fillable = [
         'name',

@@ -3,27 +3,34 @@
 namespace App\Core\Helpers;
 
 use Illuminate\Support\Facades\Storage;
+use JsonException;
 
 class FileSystemUploader implements FileUploader
 {
+    /**
+     * @param  string  $file
+     *
+     * @return array
+     * @throws JsonException
+     */
     public function upload(string $file): array
     {
-        $files = [];
-
-        try {
-            $files = json_decode(Storage::get($file), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            #TODO лог
-        }
-
-        return $files;
+        return json_decode(Storage::get($file), true, 512, JSON_THROW_ON_ERROR);
     }
 
-    public function delete(string $file)
+    /**
+     * @param  string  $file
+     *
+     * @return void
+     */
+    public function delete(string $file): void
     {
         Storage::delete($file);
     }
 
+    /**
+     * @return array
+     */
     public function getListFileForUpload(): array
     {
         return Storage::files();
