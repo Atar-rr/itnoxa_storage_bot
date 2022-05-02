@@ -56,6 +56,7 @@ class ItemProperty extends Model
         'name',
         'guid',
         'size',
+        'color'
     ];
 
     /**

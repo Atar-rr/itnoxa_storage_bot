@@ -10,7 +10,7 @@ class LowsaleCommand extends UserCommand
 {
     protected $name = 'lowsale';
 
-    protected $description = 'Отчет о отсутсвии продаж за указанный период';
+    protected $description = 'Отчет о отсутствии продаж за указанный период';
 
     protected $usage = '/lowsale';
 

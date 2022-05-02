@@ -44,18 +44,13 @@ class ItemsRepository
 
     public function getItemsWithLargeStocks(): Collection
     {
-        $q = ItemProperty::select('item_properties.item_id')
-                         ->join('item_property_balances', 'item_properties.id', '=', 'item_property_balances.item_property_id')
-                         ->where('item_property_balances.quantity', '>', 0)
-                         ->groupBy('item_properties.item_id', 'item_properties.color')
-                         ->havingRaw('SUM(item_property_balances.quantity) > ?', [10]);
-
-        return Item::selectRaw('items.article, items.name, item_properties.name as property, SUM(item_property_balances.quantity) as sum')
-                   ->join('item_properties', 'items.id', '=', 'item_properties.item_id')
-                   ->join('item_property_balances', 'item_properties.id', '=', 'item_property_balances.item_property_id')
-                   ->whereIn('items.id', $q)
-                   ->where('item_property_balances.quantity', '>', 0)
-                   ->groupBy('items.article', 'items.name', 'item_properties.name')
-                   ->get();
+        return ItemProperty::selectRaw('items.article, items.name, item_properties.color, SUM(item_property_balances.quantity) as sum')
+                           ->join('item_property_balances', 'item_properties.id', '=', 'item_property_balances.item_property_id')
+                           ->join('items', 'items.id', '=', 'item_properties.item_id')
+                           ->where('item_property_balances.quantity', '>', 0)
+                           ->groupBy('item_properties.item_id', 'item_properties.color')
+                           ->havingRaw('SUM(item_property_balances.quantity) > ?', [10])
+                           ->orderBy('items.name')
+                           ->get();
     }
 }
