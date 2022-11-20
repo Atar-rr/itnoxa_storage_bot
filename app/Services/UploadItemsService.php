@@ -17,21 +17,10 @@ class UploadItemsService
     {
         $guids = array_keys($itemDto);
 
+        # TODO сделать toBase, чтобы ниже не приводить к массиву
         $items = Item::whereIn(Item::COL_GUID, $guids)->get('guid');
 
         $itemCreatedGuids = array_diff($guids, array_column($items->toArray(), Item::COL_GUID));
-
-        #fixme удалить
-        //        // создаем если есть новые товары
-        //        if (count($itemCreatedGuids) > 0) {
-        //            $this->createItems(
-        //                $itemCreatedGuids,
-        //                $itemDto
-        //            );
-        //        }
-        //
-        //        // обновляем товары
-        //        $this->updateItems($items, $itemDto);
 
         Item::whereIn(Item::COL_GUID, $guids)
             ->with(Item::REL_PROPERTIES . '.' . ItemProperty::REL_BALANCE)
@@ -57,14 +46,15 @@ class UploadItemsService
         $newItemProperties       = [];
         $itemPropertyDto         = [];
         $newItemPropertyBalances = [];
+        $now                     = now();
 
         foreach ($itemGuids as $itemGuid) {
             $newItems[] = [
                 Item::COL_NAME    => $itemDto[$itemGuid]->getName(),
                 Item::COL_GUID    => $itemDto[$itemGuid]->getGuid(),
                 Item::COL_ARTICLE => $itemDto[$itemGuid]->getArticle(),
-                Item::CREATED_AT  => now(),
-                Item::UPDATED_AT  => now(),
+                Item::CREATED_AT  => $now,
+                Item::UPDATED_AT  => $now,
             ];
         }
 
@@ -83,8 +73,8 @@ class UploadItemsService
                     ItemProperty::COL_ITEM_ID => $items[$itemGuid],
                     ItemProperty::COL_SIZE    => $itemProperty->getSize(),
                     ItemProperty::COL_COLOR   => explode(' ', $itemProperty->getName())[0] ?? '',
-                    ItemProperty::CREATED_AT  => now(),
-                    ItemProperty::UPDATED_AT  => now(),
+                    ItemProperty::CREATED_AT  => $now,
+                    ItemProperty::UPDATED_AT  => $now,
                 ];
             }
         }
@@ -104,8 +94,8 @@ class UploadItemsService
                     ItemPropertyBalance::COL_ITEM_PROPERTY_ID => $itemProperties[$itemPropertyGuid],
                     ItemPropertyBalance::COL_STORAGE_ID       => $balanceDto->getStorageId(),
                     ItemPropertyBalance::COL_QUANTITY         => $balanceDto->getQuantity(),
-                    ItemPropertyBalance::CREATED_AT           => now(),
-                    ItemPropertyBalance::UPDATED_AT           => now(),
+                    ItemPropertyBalance::CREATED_AT           => $now,
+                    ItemPropertyBalance::UPDATED_AT           => $now,
                 ];
             }
         }

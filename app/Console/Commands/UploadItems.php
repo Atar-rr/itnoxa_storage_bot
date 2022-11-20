@@ -42,11 +42,13 @@ class UploadItems extends Command
     public const ARGUMENT_FROM = 'from';
 
     #TODO Перенести в ItemStorages, по контексту больше к нему относиться (можно будет скрыть в нем логику)
+
     /** @var int[] Соответствие названий складов в 1С и идентификаторов в БД бота */
     public const MAP_STORAGES = [
-        'Витрина СП' => Storage::STORAGE_SERGIEV_POSAD,
-        'ордерный' => Storage::STORAGE_ORDER,
-        'Витрина НН' => Storage::STORAGE_NIZHNIY_NOVGOROD,
+        'Витрина СП'  => Storage::STORAGE_SERGIEV_POSAD,
+        'ордерный'    => Storage::STORAGE_ORDER,
+        'Витрина НН'  => Storage::STORAGE_NIZHNIY_NOVGOROD,
+        'Витрина МСК' => Storage::STORAGE_MSK,
     ];
 
     /**
@@ -88,10 +90,10 @@ class UploadItems extends Command
     public function handle(): void
     {
         $needDelete = $this->option(self::OPTION_NEED_DELETE);
-        $from = $this->argument(self::ARGUMENT_FROM);
+        $from       = $this->argument(self::ARGUMENT_FROM);
 
         $fileUploader = (new FileUploadFactory())->getFileUploader($from);
-        $listFiles = $fileUploader->getListFileForUpload();
+        $listFiles    = $fileUploader->getListFileForUpload();
 
         //обходим список полученных файлов для загрузки данных
         foreach ($listFiles as $file) {
@@ -117,7 +119,8 @@ class UploadItems extends Command
     /**
      * Преобразование загруженных данных в DTO
      *
-     * @param array $data
+     * @param  array  $data
+     *
      * @return ItemDto[]
      */
     private function getAggregatedItems(array $data): array
@@ -127,7 +130,7 @@ class UploadItems extends Command
 
         foreach ($data as $value) {
             if ($value[self::FIELD_RUS_PROPERTY_GUID] === '' || $value[self::FIELD_RUS_PROPERTY_GUID] === '00000000-0000-0000-0000-000000000000') {
-                Log::error(implode( ' ', $value) . ' Отсутствуют обязательно поле ' . self::FIELD_RUS_PROPERTY_GUID);
+                Log::error(implode(' ', $value) . ' Отсутствуют обязательно поле ' . self::FIELD_RUS_PROPERTY_GUID);
                 continue;
             }
 

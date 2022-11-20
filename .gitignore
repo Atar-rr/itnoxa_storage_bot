@@ -16,5 +16,4 @@ yarn-error.log
 db
 storage/upload/info.json
 test.php
-deletewebhook.php
 storage/upload/*

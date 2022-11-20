@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Storage
  *
- * @property int $id Идентификатор
- * @property string $name Название склада
+ * @property int         $id   Идентификатор
+ * @property string      $name Название склада
  * @property string|null $created_at
  * @property string|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Storage newModelQuery()
@@ -34,7 +34,8 @@ class Storage extends Model
     public const
         STORAGE_SERGIEV_POSAD = 1,
         STORAGE_NIZHNIY_NOVGOROD = 2,
-        STORAGE_ORDER = 3;
+        STORAGE_ORDER = 3,
+        STORAGE_MSK = 4;
 
     /**
      * Следует ли обрабатывать временные метки модели.
